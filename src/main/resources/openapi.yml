@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+  title: Cruise API
+  description: API for retrieving cruise details
+  version: 1.0.0
+paths:
+  /send-deals:
+    get:
+      summary: Send email about cruise deals
+      tags:
+        - mail-controller
+      operationId: sendMail
+      description: Sends an email
+      responses:
+        '204':
+          description: Successfully sent
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+
