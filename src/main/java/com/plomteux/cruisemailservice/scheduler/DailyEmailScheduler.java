@@ -8,14 +8,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Component
 @AllArgsConstructor
 public class DailyEmailScheduler {
     private final EmailService emailService;
     private final CruiseService cruiseService;
 
-    @Value("${emailService.cruiseEndPoint}")
-    private String cruiseEndPoint;
+    @Value("#{'${emailService.cruiseEndPoint}'.split(',')}")
+    private List<String> cruiseEndPoints;
 
     @Value("${emailService.subject}")
     private String emailSubject;
@@ -25,7 +27,9 @@ public class DailyEmailScheduler {
 
     @Scheduled(cron = "0 0 9 * * ?")
     public void triggerEmail() {
-        String body = cruiseService.callApiAndReturnText(cruiseEndPoint);
-           emailService.sendCruiseDealsEmail(emailRecipient, emailSubject, body);
+        for (String cruiseEndPoint : cruiseEndPoints) {
+            String body = cruiseService.callApiAndReturnText(cruiseEndPoint);
+            emailService.sendCruiseDealsEmail(emailRecipient, emailSubject, body);
+        }
     }
 }
