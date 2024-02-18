@@ -22,14 +22,16 @@ public class DailyEmailScheduler {
     @Value("${emailService.subject}")
     private String emailSubject;
 
-    @Value("${emailService.recipient}")
-    private String emailRecipient;
+    @Value("#{'${emailService.recipients}'.split(',')}")
+    private List<String> emailRecipients;
 
     @Scheduled(cron = "0 0 9 * * ?")
     public void triggerEmail() {
         for (String cruiseEndPoint : cruiseEndPoints) {
             String body = cruiseService.callApiAndReturnText(cruiseEndPoint);
-            emailService.sendCruiseDealsEmail(emailRecipient, emailSubject, body);
+            for (String emailRecipient : emailRecipients) {
+                emailService.sendCruiseDealsEmail(emailRecipient, emailSubject, body);
+            }
         }
     }
 }
